@@ -1,0 +1,2 @@
+--Create database Projeto_SalesMVC
+--create database Projeto_SalesMVC;

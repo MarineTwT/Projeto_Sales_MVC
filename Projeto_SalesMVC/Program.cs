@@ -1,3 +1,6 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Projeto_SalesMVC.Data;
 namespace Projeto_SalesMVC
 {
     public class Program
@@ -5,6 +8,8 @@ namespace Projeto_SalesMVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<SalesMVCContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SalesMVCContext") ?? throw new InvalidOperationException("Connection string 'SalesMVCContext' not found.")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
