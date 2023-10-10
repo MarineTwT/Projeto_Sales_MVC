@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Projeto_SalesMVC.Data;
+using System.Data.SqlClient;
+
 namespace Projeto_SalesMVC
 {
     public class Program
@@ -8,11 +10,15 @@ namespace Projeto_SalesMVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            //New option placed -> configuration
+            ConfigurationManager configuration = builder.Configuration;
+            
             builder.Services.AddDbContext<SalesMVCContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SalesMVCContext") ?? throw new InvalidOperationException("Connection string 'SalesMVCContext' not found.")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SalesMVCContext") ?? throw new InvalidOperationException("Connection string 'SalesMVCContext' not found.")));        
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<SeedingService>();
 
             var app = builder.Build();
 
@@ -22,6 +28,27 @@ namespace Projeto_SalesMVC
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            else
+            {
+                // Obtenha uma instância do serviço SeedingService do provedor de serviços.
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var seedingService = services.GetRequiredService<SeedingService>();
+
+                    try
+                    {
+                        seedingService.Seed();
+                        Console.WriteLine("Seeding completed successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Seeding failed with error: {ex.Message}");
+                    }
+                }
+
             }
 
             app.UseHttpsRedirection();

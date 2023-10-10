@@ -36,7 +36,7 @@ namespace Projeto_SalesMVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department");
+                    b.ToTable("Department", (string)null);
                 });
 
             modelBuilder.Entity("Projeto_SalesMVC.Models.SalesRecord", b =>
@@ -63,7 +63,7 @@ namespace Projeto_SalesMVC.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("salesRecord");
+                    b.ToTable("salesRecord", (string)null);
                 });
 
             modelBuilder.Entity("Projeto_SalesMVC.Models.Seller", b =>
@@ -95,7 +95,7 @@ namespace Projeto_SalesMVC.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Seller");
+                    b.ToTable("Seller", (string)null);
                 });
 
             modelBuilder.Entity("Projeto_SalesMVC.Models.SalesRecord", b =>
