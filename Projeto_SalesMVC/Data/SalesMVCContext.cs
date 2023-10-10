@@ -14,6 +14,8 @@ namespace Projeto_SalesMVC.Data
         {
         }
 
-        public DbSet<Projeto_SalesMVC.Models.Department> Department { get; set; } = default!;
+        public DbSet<Department> Department { get; set; } = default!;
+        public DbSet<SalesRecord> salesRecord { get; set; } = default!;
+        public DbSet<Seller> Seller { get; set; } = default!;
     }
 }
