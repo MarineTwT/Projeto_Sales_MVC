@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Projeto_SalesMVC.Data;
 using System.Data.SqlClient;
+using Projeto_SalesMVC.Services;
 
 namespace Projeto_SalesMVC
 {
@@ -19,6 +20,7 @@ namespace Projeto_SalesMVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<SeedingService>();
+            builder.Services.AddScoped<SellerService>();
 
             var app = builder.Build();
 
