@@ -2,6 +2,7 @@
 using Projeto_SalesMVC.Data;
 using Projeto_SalesMVC.Models;
 using Microsoft.EntityFrameworkCore;
+using Projeto_SalesMVC.Services.Exceptions;
 
 namespace Projeto_SalesMVC.Services
 {
@@ -35,6 +36,28 @@ namespace Projeto_SalesMVC.Services
             var obj = _context.Seller.Find(id);
             _context.Seller.Remove(obj);
             _context.SaveChanges();
+        }
+
+        public void update(Seller obj)
+        {
+            if (!_context.Seller.Any(x => x.Id == obj.Id))
+            {
+                throw new NotFoundException("ID not found...");
+            }
+
+            else
+            {
+                try
+                {
+                    _context.Update(obj);
+                    _context.SaveChanges();
+                }
+
+                catch(DBConcurrencyException e)
+                {
+                    throw new DBConcurrencyException(e.Message);
+                }
+            }
         }
     }
 }

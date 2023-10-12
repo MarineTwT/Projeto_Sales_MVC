@@ -2,6 +2,7 @@
 using Projeto_SalesMVC.Services;
 using Projeto_SalesMVC.Models;
 using Projeto_SalesMVC.Models.ViewModels;
+using Projeto_SalesMVC.Services.Exceptions;
 
 namespace Projeto_SalesMVC.Controllers
 {
@@ -61,6 +62,25 @@ namespace Projeto_SalesMVC.Controllers
             return View(obj);
         }
 
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            List<Department> departments = _departmentsService.FindAll();
+            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments};
+
+            return View(viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -75,6 +95,36 @@ namespace Projeto_SalesMVC.Controllers
         {
             _sellerService.insert(seller);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int Id,Seller seller)
+        { 
+            if(Id != seller.Id)
+            {
+                return BadRequest();
+            }
+
+
+            else
+            {
+                try
+                {
+                    _sellerService.update(seller);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                catch (NotFoundException) 
+                {
+                    return NotFound();
+                }
+
+                catch(DBConcurrencyException)
+                {
+                    return BadRequest();
+                }
+            }
         }
 
 
