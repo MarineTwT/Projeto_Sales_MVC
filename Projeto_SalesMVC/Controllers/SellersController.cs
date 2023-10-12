@@ -4,7 +4,6 @@ using Projeto_SalesMVC.Models;
 using Projeto_SalesMVC.Models.ViewModels;
 using Projeto_SalesMVC.Services.Exceptions;
 using System.Diagnostics;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Projeto_SalesMVC.Controllers
 {
@@ -19,43 +18,27 @@ namespace Projeto_SalesMVC.Controllers
             _departmentsService = departmentsService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = _sellerService.FindAll();
+            var list = await _sellerService.FindAllAsync();
             return View(list);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _departmentsService.FindAll();
+            var departments = await _departmentsService.FindAllAsync();
             var ViewModel = new SellerFormViewModel { Departments = departments };
             return View(ViewModel);
         }
 
-        public IActionResult Delete(int? id) 
-        {
-            if(id == null)
-            {
-                return RedirectToAction(nameof(Error), new {Message = "Id not provided"});
-            }
-         
-            var obj = _sellerService.FindById(id.Value);
-            if(obj == null) 
-            {
-                return RedirectToAction(nameof(Error), new { Message = "Id not found" });
-            }
-          
-            return View(obj);                          
-        }
-
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { Message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { Message = "Id not found" });
@@ -64,21 +47,37 @@ namespace Projeto_SalesMVC.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { Message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { Message = "Id not found" });
             }
 
-            List<Department> departments = _departmentsService.FindAll();
-            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments};
+            return View(obj);
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction(nameof(Error), new { Message = "Id not provided" });
+            }
+
+            var obj = await _sellerService.FindByIdAsync(id.Value);
+            if (obj == null)
+            {
+                return RedirectToAction(nameof(Error), new { Message = "Id not found" });
+            }
+
+            List<Department> departments = await _departmentsService.FindAllAsync();
+            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments };
 
             return View(viewModel);
         }
@@ -92,47 +91,58 @@ namespace Projeto_SalesMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _sellerService.Remove(id);
+            await _sellerService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Seller seller) 
+        public async Task<IActionResult> Create(Seller seller)
         {
-            _sellerService.insert(seller);
+            if (!ModelState.IsValid)
+            {
+                var departments = await _departmentsService.FindAllAsync();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }           
+            await _sellerService.insertAsync(seller);
             return RedirectToAction(nameof(Index));
+
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int Id,Seller seller)
-        { 
-            if(Id != seller.Id)
+        public async Task<IActionResult> Edit(int Id, Seller seller)
+        {
+            if (!ModelState.IsValid)
+            {
+                var departments = await _departmentsService.FindAllAsync();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
+
+            if (Id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { Message = "Id miss match" });
             }
 
-
-            else
+            try
             {
-                try
-                {
-                    _sellerService.update(seller);
-                    return RedirectToAction(nameof(Index));
-                }
+                await _sellerService.updateAsync(seller);
+                return RedirectToAction(nameof(Index));
+            }
 
-                catch (NotFoundException e) 
-                {
-                    return RedirectToAction(nameof(Error), new { Message = e.Message});
-                }
+            catch (NotFoundException e)
+            {
+                return RedirectToAction(nameof(Error), new { Message = e.Message });
+            }
 
-                catch(DBConcurrencyException e)
-                {
-                    return RedirectToAction(nameof(Error), new { Message = e.Message});
-                }
+            catch (DBConcurrencyException e)
+            {
+                return RedirectToAction(nameof(Error), new { Message = e.Message });
             }
         }
     }
