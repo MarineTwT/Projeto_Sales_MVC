@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Projeto_SalesMVC.Models
 {
@@ -6,9 +9,16 @@ namespace Projeto_SalesMVC.Models
     {
         public int Id { get; set; }
         public string  Name { get; set; }
+
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+
+        [Display(Name = "Base Salary"), DataType(DataType.Currency)]
         public double BaseSalary { get; set; }
+
+        [Display(Name = "Birth Date"), DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime BirthDate { get; set; }
+
         public Department Department { get; set; }
         public int DepartmentId { get; set; }
         public ICollection<SalesRecord> Sales { get; set; } = new List<SalesRecord>();

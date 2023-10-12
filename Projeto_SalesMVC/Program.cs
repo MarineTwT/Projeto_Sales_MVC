@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Projeto_SalesMVC.Data;
 using System.Data.SqlClient;
 using Projeto_SalesMVC.Services;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace Projeto_SalesMVC
 {
@@ -54,7 +56,18 @@ namespace Projeto_SalesMVC
 
             }
 
+            var enUS = new CultureInfo("en-US");
+            var localization_options = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(enUS),
+                SupportedCultures = new List<CultureInfo> { enUS },
+                SupportedUICultures = new List<CultureInfo> { enUS }
+            };
+
+            app.UseRequestLocalization(localization_options);
+
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();
