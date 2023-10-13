@@ -24,6 +24,7 @@ namespace Projeto_SalesMVC
             builder.Services.AddScoped<SeedingService>();
             builder.Services.AddScoped<SellerService>();
             builder.Services.AddScoped<DepartmentsService>();
+            builder.Services.AddScoped<SalesRecordService>();
 
             var app = builder.Build();
 
