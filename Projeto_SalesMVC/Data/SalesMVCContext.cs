@@ -15,7 +15,7 @@ namespace Projeto_SalesMVC.Data
         }
 
         public DbSet<Department> Department { get; set; } = default!;
-        public DbSet<SalesRecord> salesRecord { get; set; } = default!;
+        public DbSet<SalesRecord> SalesRecord { get; set; } = default!;
         public DbSet<Seller> Seller { get; set; } = default!;
     }
 }
